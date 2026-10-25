@@ -1,0 +1,332 @@
+:root {
+  --intro-backdrop: var(--text);
+  --intro-foreground: var(--bg);
+  --intro-blackout: 300ms;
+  --intro-focus: 1900ms;
+  --intro-name: 650ms;
+  --intro-curtain: 750ms;
+  --intro-hero-delay: 100ms;
+  --intro-hero-enter: 350ms;
+  --intro-letter-stagger: 8ms;
+  --intro-letter-opacity: 260ms;
+  --intro-letter-transform: 450ms;
+  --intro-stage-fade: 250ms;
+  --intro-stage-shift: 350ms;
+  --intro-control-feedback: 180ms;
+  --intro-hero-availability-delay: 0ms;
+  --intro-hero-eyebrow-delay: 60ms;
+  --intro-hero-title-delay: 120ms;
+  --intro-hero-copy-delay: 180ms;
+  --intro-hero-actions-delay: 240ms;
+  --intro-hero-note-delay: 300ms;
+  --intro-visual-delay: 250ms;
+  --intro-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --intro-ease-in-out: cubic-bezier(.76, 0, .24, 1);
+}
+
+[data-theme="dark"] {
+  --intro-backdrop: var(--bg);
+  --intro-foreground: var(--text);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --intro-backdrop: var(--bg);
+    --intro-foreground: var(--text);
+  }
+}
+
+html.intro-pending,
+html.intro-playing {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+html.intro-pending .hero-content > .availability,
+html.intro-pending .hero-content > .eyebrow,
+html.intro-pending .hero-content > h1,
+html.intro-pending .hero-content > .hero-copy,
+html.intro-pending .hero-content > .hero-actions,
+html.intro-pending .hero-content > .hero-note,
+html.intro-pending .visual-stage,
+html.intro-playing .hero-content > .availability,
+html.intro-playing .hero-content > .eyebrow,
+html.intro-playing .hero-content > h1,
+html.intro-playing .hero-content > .hero-copy,
+html.intro-playing .hero-content > .hero-actions,
+html.intro-playing .hero-content > .hero-note,
+html.intro-playing .visual-stage {
+  opacity: 0;
+}
+
+html.intro-playing .hero-content > .availability,
+html.intro-playing .hero-content > .eyebrow,
+html.intro-playing .hero-content > h1,
+html.intro-playing .hero-content > .hero-copy,
+html.intro-playing .hero-content > .hero-actions,
+html.intro-playing .hero-content > .hero-note,
+html.intro-playing .visual-stage {
+  transform: translateY(16px);
+  transition:
+    opacity var(--intro-hero-enter) var(--intro-ease-out),
+    transform var(--intro-hero-enter) var(--intro-ease-out);
+}
+
+html.intro-playing .hero-content > .availability { transition-delay: var(--intro-hero-availability-delay) }
+html.intro-playing .hero-content > .eyebrow { transition-delay: var(--intro-hero-eyebrow-delay) }
+html.intro-playing .hero-content > h1 { transition-delay: var(--intro-hero-title-delay) }
+html.intro-playing .hero-content > .hero-copy { transition-delay: var(--intro-hero-copy-delay) }
+html.intro-playing .hero-content > .hero-actions { transition-delay: var(--intro-hero-actions-delay) }
+html.intro-playing .hero-content > .hero-note { transition-delay: var(--intro-hero-note-delay) }
+html.intro-playing .visual-stage { transition-delay: var(--intro-visual-delay) }
+
+html.intro-hero-entering .hero-content > .availability,
+html.intro-hero-entering .hero-content > .eyebrow,
+html.intro-hero-entering .hero-content > h1,
+html.intro-hero-entering .hero-content > .hero-copy,
+html.intro-hero-entering .hero-content > .hero-actions,
+html.intro-hero-entering .hero-content > .hero-note,
+html.intro-hero-entering .visual-stage {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cinematic-intro {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.intro-backdrop {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: var(--intro-backdrop);
+  opacity: 1;
+  transition: opacity var(--intro-curtain) var(--intro-ease-in-out);
+}
+
+.intro-aurora {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  opacity: 0;
+  transform: scale(.14);
+  background:
+    radial-gradient(ellipse at 50% 46%, color-mix(in srgb, var(--accent) 54%, transparent), transparent 43%),
+    radial-gradient(ellipse at 32% 38%, color-mix(in srgb, var(--accent-soft) 64%, transparent), transparent 37%),
+    radial-gradient(ellipse at 68% 60%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 42%);
+  transition:
+    opacity var(--intro-focus) var(--intro-ease-out),
+    transform var(--intro-focus) var(--intro-ease-out);
+}
+
+.intro-stage {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: min(92vw, 820px);
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 3.2vh, 32px);
+  transform: translate(-50%, -50%);
+  transition:
+    opacity var(--intro-stage-fade) ease,
+    transform var(--intro-stage-shift) var(--intro-ease-out);
+}
+
+.intro-art {
+  position: relative;
+  width: min(62vw, 300px);
+  aspect-ratio: .83;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity var(--intro-blackout) ease;
+}
+
+.intro-art canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.intro-art::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid color-mix(in srgb, var(--intro-foreground) 38%, transparent);
+  border-radius: 28px;
+  background: color-mix(in srgb, var(--intro-backdrop) 15%, transparent);
+  content: "";
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity var(--intro-focus) var(--intro-ease-out);
+}
+
+.intro-counter {
+  position: absolute;
+  z-index: 3;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  left: max(24px, env(safe-area-inset-left));
+  color: var(--intro-foreground);
+  font: 500 .82rem "DM Mono", monospace;
+  letter-spacing: .12em;
+}
+
+.intro-counter-track {
+  display: block;
+  width: clamp(80px, 16vw, 150px);
+  height: 1px;
+  margin-top: 10px;
+  background: color-mix(in srgb, var(--intro-foreground) 32%, transparent);
+  transform-origin: left center;
+}
+
+.intro-counter-progress {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+.intro-name {
+  display: flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  color: var(--intro-foreground);
+  font-size: clamp(1.9rem, 8.5vw, 5.4rem);
+  font-weight: 800;
+  letter-spacing: -.075em;
+  line-height: 1.08;
+  text-align: center;
+}
+
+.intro-letter-mask {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0 .005em;
+}
+
+.intro-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(110%);
+  transition:
+    opacity var(--intro-letter-opacity) var(--intro-ease-out),
+    transform var(--intro-letter-transform) var(--intro-ease-out);
+}
+
+.intro-space {
+  flex: 0 0 .24em;
+}
+
+.intro-skip {
+  position: absolute;
+  z-index: 5;
+  top: max(22px, env(safe-area-inset-top));
+  right: max(24px, env(safe-area-inset-right));
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--intro-foreground) 38%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--intro-foreground);
+  cursor: pointer;
+  font: 500 .75rem "DM Mono", monospace;
+  transition:
+    background-color var(--intro-control-feedback) ease,
+    transform var(--intro-control-feedback) ease;
+  pointer-events: auto;
+}
+
+.intro-skip:hover,
+.intro-skip:focus-visible {
+  background: color-mix(in srgb, var(--intro-foreground) 12%, transparent);
+  transform: translateY(-1px);
+}
+
+.intro-skip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.intro-curtain {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  width: 50.1%;
+  background: var(--intro-backdrop);
+  transform: translateX(0);
+  transition: transform var(--intro-curtain) var(--intro-ease-in-out);
+}
+
+.intro-curtain-left { left: 0 }
+.intro-curtain-right { right: 0 }
+
+.cinematic-intro.intro-phase-one .intro-art {
+  opacity: 1;
+  transition-duration: var(--intro-focus);
+}
+
+.cinematic-intro.intro-phase-one .intro-aurora {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.cinematic-intro.intro-phase-one .intro-art::after {
+  opacity: 0;
+}
+
+.cinematic-intro.intro-phase-name .intro-letter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cinematic-intro.intro-opening .intro-backdrop {
+  opacity: 0;
+}
+
+.cinematic-intro.intro-opening .intro-curtain-left {
+  transform: translateX(-101%);
+}
+
+.cinematic-intro.intro-opening .intro-curtain-right {
+  transform: translateX(101%);
+}
+
+.cinematic-intro.intro-opening .intro-stage,
+.cinematic-intro.intro-opening .intro-aurora,
+.cinematic-intro.intro-opening .intro-counter,
+.cinematic-intro.intro-opening .intro-skip {
+  opacity: 0;
+}
+
+.cinematic-intro.intro-opening .intro-stage {
+  transform: translate(-50%, calc(-50% - 12px));
+}
+
+@media (max-width: 600px) {
+  .intro-art {
+    width: min(58vw, 240px);
+  }
+
+  .intro-name {
+    font-size: clamp(1.8rem, 8.7vw, 3rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.intro-pending,
+  html.intro-playing {
+    overflow: auto;
+    scrollbar-gutter: auto;
+  }
+}

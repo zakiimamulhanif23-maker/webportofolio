@@ -1,0 +1,216 @@
+:root {
+  --motion-ease: cubic-bezier(.2, .75, .25, 1);
+}
+
+.motion-ready .reveal:not(.visible) {
+  transform: translateY(22px);
+  transition: transform 700ms var(--motion-ease);
+}
+
+.motion-ready .reveal.visible {
+  transform: translateY(0);
+}
+
+.kinetic-char {
+  display: inline-block;
+  transform-origin: 50% 100%;
+}
+
+.motion-ready .hero h1 .kinetic-char {
+  animation: editorial-letter 680ms var(--motion-ease) both;
+  animation-delay: calc(var(--letter-index) * 22ms);
+}
+
+.hero h1 .gradient-text {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-warm) 66%, transparent);
+  text-decoration-thickness: .075em;
+  text-underline-offset: .1em;
+}
+
+.visual-stage {
+  --scroll-shift: 0px;
+}
+
+.visual-stage .orbit,
+.visual-stage .core-card,
+.visual-stage .floating-tag {
+  translate: 0 var(--scroll-shift);
+}
+
+.visual-stage .floating-tag {
+  transition: translate 350ms var(--motion-ease);
+}
+
+.motion-ready .visual-stage:not(.portrait-revealed) .core-card {
+  clip-path: inset(12% 9% 12% 9% round 28px);
+}
+
+.visual-stage .core-card {
+  transition: clip-path 950ms var(--motion-ease);
+}
+
+.motion-ready .visual-stage.portrait-revealed .core-card {
+  clip-path: inset(0 round 28px);
+}
+
+.tag-two b,
+.contact-email span {
+  color: var(--accent-warm);
+}
+
+.motion-ready .btn {
+  translate: var(--magnet-x, 0px) var(--magnet-y, 0px);
+  transition:
+    translate 220ms var(--motion-ease),
+    transform 250ms var(--motion-ease),
+    border-color 250ms ease,
+    background-color 250ms ease,
+    color 250ms ease;
+}
+
+.btn-arrow,
+.project-link,
+.contact-email span {
+  display: inline-block;
+  transition: transform 280ms var(--motion-ease);
+}
+
+.btn:hover .btn-arrow,
+.project-link:hover,
+.contact-email:hover span {
+  transform: translate(3px, -3px);
+}
+
+.motion-ready .project-card.reveal.visible {
+  transform:
+    perspective(1000px)
+    rotateX(var(--card-tilt-y, 0deg))
+    rotateY(var(--card-tilt-x, 0deg));
+  transition:
+    transform 350ms var(--motion-ease),
+    border-color 300ms ease,
+    opacity 240ms ease;
+}
+
+.motion-ready .project-card.reveal.visible:hover {
+  transform:
+    perspective(1000px)
+    rotateX(var(--card-tilt-y, 0deg))
+    rotateY(var(--card-tilt-x, 0deg))
+    translateY(-5px);
+}
+
+.project-card .project-art .art-window {
+  translate: var(--art-shift-x, 0px) var(--art-shift-y, 0px);
+  transition: translate 380ms var(--motion-ease);
+}
+
+.theme-toggle:hover,
+.menu-toggle:hover {
+  transform: rotate(-5deg) scale(1.04);
+}
+
+.cursor-trail {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-100px, -100px, 0);
+  transition:
+    opacity 180ms ease,
+    width 220ms var(--motion-ease),
+    height 220ms var(--motion-ease),
+    background-color 220ms ease;
+  will-change: transform;
+}
+
+.cursor-trail.is-visible {
+  opacity: .72;
+}
+
+.cursor-trail.cursor-ring {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--accent) 68%, transparent);
+  opacity: .44;
+  transition:
+    opacity 180ms ease,
+    transform 320ms var(--motion-ease),
+    width 220ms var(--motion-ease),
+    height 220ms var(--motion-ease);
+}
+
+.cursor-trail.cursor-ring.cursor-ring-wide {
+  width: 38px;
+  height: 38px;
+  opacity: .22;
+  transition-duration: 420ms;
+}
+
+.cursor-trail.is-active {
+  width: 13px;
+  height: 13px;
+  background: var(--accent-warm);
+}
+
+html.has-custom-cursor :is(a, button) {
+  cursor: none;
+}
+
+@keyframes editorial-letter {
+  from {
+    opacity: 0;
+    transform: translateY(65%) rotate(5deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+}
+
+@media (max-width: 700px), (pointer: coarse) {
+  .visual-stage .orbit,
+  .visual-stage .core-card,
+  .visual-stage .floating-tag {
+    translate: none;
+  }
+
+  .project-card .project-art .art-window {
+    translate: none;
+  }
+
+  .motion-ready .project-card.reveal.visible {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-ready .reveal:not(.visible),
+  .motion-ready .reveal.visible,
+  .motion-ready .hero h1 .kinetic-char,
+  .motion-ready .visual-stage:not(.portrait-revealed) .core-card,
+  .motion-ready .visual-stage.portrait-revealed .core-card,
+  .motion-ready .project-card,
+  .motion-ready .btn,
+  .project-card .project-art .art-window {
+    animation: none !important;
+    clip-path: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    translate: none !important;
+    transition: none !important;
+  }
+
+  .cursor-trail {
+    display: none !important;
+  }
+}
